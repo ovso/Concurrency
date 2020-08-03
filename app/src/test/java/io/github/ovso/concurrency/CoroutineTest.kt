@@ -1,6 +1,7 @@
 package io.github.ovso.concurrency
 
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
@@ -10,6 +11,7 @@ import org.junit.Test
  *
  * See [testing documentation](http://d.android.com/tools/testing).
  */
+@InternalCoroutinesApi
 class CoroutineTest {
     @Test
     fun solution() {
@@ -21,7 +23,12 @@ class CoroutineTest {
             doSomething()
         }
         task.join()
-        println("Completed")
+        if (task.isCancelled) {
+            val completionExceptionOrNull = task.getCancellationException()
+            println("Error with message: ${completionExceptionOrNull.cause}")
+        } else {
+            println("Success")
+        }
     }
 
     private fun doSomething() {
