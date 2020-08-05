@@ -16,7 +16,8 @@ class CoroutineTest {
     }
 
     private fun main() = runBlocking {
-        val task = GlobalScope.launch {
+        val dispatcher = newSingleThreadContext(name = "ServiceCall")
+        val task = GlobalScope.launch(dispatcher) {
 //            doSomething()
             printCurrentThread()
         }
