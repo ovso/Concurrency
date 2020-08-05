@@ -17,10 +17,14 @@ class CoroutineTest {
 
     private fun main() = runBlocking {
         val task = GlobalScope.launch {
-            doSomething()
+//            doSomething()
+            printCurrentThread()
         }
         task.join()
-        println("Completed")
+    }
+
+    private fun printCurrentThread() {
+        println("Running in thread [${Thread.currentThread().name}]")
     }
 
     private fun doSomething() {
