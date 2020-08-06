@@ -15,12 +15,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        GlobalScope.launch(dispatcher) {
-            val headlines = fetchRssHeadlines()
-            GlobalScope.launch(Dispatchers.Main) {
-                newsCount.text = "Found ${headlines.count()} News"
-            }
-            println(headlines)
+        asyncLoadNews()
+    }
+
+    private fun asyncLoadNews() = GlobalScope.launch(dispatcher) {
+        val headlines = fetchRssHeadlines()
+        launch(Dispatchers.Main) {
+            newsCount.text = "Found ${headlines.count()} News"
         }
     }
 
