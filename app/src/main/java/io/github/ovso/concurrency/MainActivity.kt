@@ -5,8 +5,6 @@ import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
-import org.w3c.dom.Element
-import org.w3c.dom.Node
 import javax.xml.parsers.DocumentBuilderFactory
 
 class MainActivity : AppCompatActivity() {
@@ -25,16 +23,8 @@ class MainActivity : AppCompatActivity() {
         val builder = factory.newDocumentBuilder()
         val xml = builder.parse("https://ovso.github.io/feed.xml")
         val entries = xml.getElementsByTagName("entry")
-        val news = xml.getElementsByTagName("entry").item(0)
-        return (0 until news.childNodes.length)
-            .asSequence()
-            .map { news.childNodes.item(it) }
-            .filter { Node.ELEMENT_NODE == it.nodeType }
-            .map { it as Element }
-            .filter { "item" == it.tagName }
-            .map {
-                it.getElementsByTagName("title").item(0).textContent
-            }
-            .toList()
+        return (0 until entries.length).map {
+            entries.item(it).childNodes.item(0).childNodes.item(0).nodeValue
+        }.toList()
     }
 }
