@@ -2,6 +2,7 @@ package io.github.ovso.concurrency
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
@@ -15,6 +16,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         GlobalScope.launch(dispatcher) {
             val headlines = fetchRssHeadlines()
+            newsCount.text = "Found ${headlines.count()} News"
             println(headlines)
         }
     }
