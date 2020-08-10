@@ -16,9 +16,7 @@ class CoroutineTest {
     }
 
     private fun main()  = runBlocking {
-        val job = GlobalScope.launch {
-
-        }
+        val job = Job()
     }
 
 
