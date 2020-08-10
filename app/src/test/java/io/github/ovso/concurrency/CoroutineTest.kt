@@ -20,7 +20,7 @@ class CoroutineTest {
             delay(3000)
         }
 
-        job.start()
+        job.join()
     }
 
 
