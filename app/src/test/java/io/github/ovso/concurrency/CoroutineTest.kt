@@ -16,11 +16,14 @@ class CoroutineTest {
     }
 
     private fun main() = runBlocking {
-        val job = GlobalScope.launch(start = CoroutineStart.LAZY) {
-            delay(3000)
+        val job = GlobalScope.launch {
+            delay(5000)
+            println("Job")
         }
 
-        job.join()
+        delay(2000)
+        job.cancel()
+        println("Cancel")
     }
 
 
