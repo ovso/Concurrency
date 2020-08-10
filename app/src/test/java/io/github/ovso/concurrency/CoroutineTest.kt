@@ -16,16 +16,7 @@ class CoroutineTest {
     }
 
     private fun main() = runBlocking {
-        val headlinesTask = GlobalScope.async {
-            getHeadlines()
-        }
-        headlinesTask.await()
+        val articlesTask = CompletableDeferred<List<Any>>()
+        articlesTask.await()
     }
-
-    private fun getHeadlines(): Any {
-        println("getHeadlines")
-        return "null"
-    }
-
-
 }
