@@ -1,15 +1,14 @@
 package io.github.ovso.concurrency
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.newSingleThreadContext
+import kotlinx.coroutines.*
 import javax.xml.parsers.DocumentBuilderFactory
 
 class MainActivity : AppCompatActivity() {
+    @ObsoleteCoroutinesApi
     private val dispatcher = newSingleThreadContext(name = "ServiceCall")
     private val factory = DocumentBuilderFactory.newInstance()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,6 +17,7 @@ class MainActivity : AppCompatActivity() {
         asyncLoadNews()
     }
 
+    @SuppressLint("SetTextI18n")
     private fun asyncLoadNews() = GlobalScope.launch(dispatcher) {
         val headlines = fetchRssHeadlines()
         launch(Dispatchers.Main) {
