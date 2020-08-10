@@ -15,8 +15,12 @@ class CoroutineTest {
         main()
     }
 
-    private fun main()  = runBlocking {
-        val job = Job()
+    private fun main() = runBlocking {
+        GlobalScope.launch {
+            TODO("Not Implemented!")
+        }
+
+        delay(500)
     }
 
 
