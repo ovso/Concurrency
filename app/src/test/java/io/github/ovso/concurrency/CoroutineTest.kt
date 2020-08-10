@@ -1,10 +1,8 @@
 package io.github.ovso.concurrency
 
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import org.junit.Test
+import kotlin.system.measureTimeMillis
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -19,16 +17,22 @@ class CoroutineTest {
     }
 
     private fun main() = runBlocking {
-        val deferred = GlobalScope.async {
-            println("디펄드")
-            TODO("Not implemented yet!")
+        val time = measureTimeMillis {
+            val job = GlobalScope.launch {
+                println("Launch1")
+                delay(2000)
+                println("Launch2")
+            }
+            // Wait for it to complete once
+            job.join()
+
+            // Restart the Job
+            println("Start")
+            job.start()
+            println("Join")
+            job.join()
         }
 
-
-        try {
-            deferred.await()
-        } catch (e: Throwable) {
-            println("Deferred cancelled due to ${e.message}")
-        }
+        println("Took $time ms")
     }
 }
