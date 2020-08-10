@@ -21,7 +21,12 @@ class CoroutineTest {
         }
 
         delay(2000)
-        job.cancel(cause = CancellationException("Timeout!"))
+
+        // cancel
+        job.cancel(cause = CancellationException("Tired of waiting"))
+
+        val cancellation = job.getCancellationException()
+        println(cancellation.message)
     }
 
 
