@@ -16,7 +16,12 @@ class CoroutineTest {
     }
 
     private fun main() = runBlocking {
-        val articlesTask = CompletableDeferred<List<Any>>()
-        articlesTask.await()
+        val deferred = GlobalScope.async {
+            println("디펄드")
+            TODO("Not implemented yet!")
+        }
+
+        // Wait for it to fail
+        delay(2000)
     }
 }
