@@ -15,13 +15,12 @@ class CoroutineTest {
         main()
     }
 
-    private fun main() = runBlocking {
+    private fun main() = runBlocking<Unit> {
         val deferred = GlobalScope.async {
             println("디펄드")
             TODO("Not implemented yet!")
         }
 
-        // Wait for it to fail
-        delay(2000)
+        deferred.await()
     }
 }
