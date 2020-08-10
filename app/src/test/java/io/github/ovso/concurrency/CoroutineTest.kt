@@ -16,12 +16,12 @@ class CoroutineTest {
     }
 
     private fun main() = runBlocking {
-        val exceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
-            println("Job cancelled due to ${throwable.message}")
-        }
-
-        GlobalScope.launch(exceptionHandler) {
+        GlobalScope.launch {
             TODO("Not implemented yet!")
+        }.invokeOnCompletion { cause ->
+            cause?.let {
+                println("Job cancelled due to ${it.message}")
+            }
         }
 
         delay(2000)
