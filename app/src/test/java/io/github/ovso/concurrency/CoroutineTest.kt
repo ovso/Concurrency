@@ -18,12 +18,10 @@ class CoroutineTest {
     private fun main() = runBlocking {
         val job = GlobalScope.launch {
             delay(5000)
-            println("Job")
         }
 
         delay(2000)
-        job.cancel()
-        println("Cancel")
+        job.cancel(cause = CancellationException("Timeout!"))
     }
 
 
