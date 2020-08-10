@@ -16,8 +16,8 @@ class CoroutineTest {
     }
 
     private fun main() = runBlocking {
-        GlobalScope.launch {
-            TODO("Not Implemented!")
+        GlobalScope.launch(start = CoroutineStart.LAZY) {
+            TODO("Not implemented yet!")
         }
 
         delay(500)
