@@ -16,15 +16,15 @@ class CoroutineTest {
     }
 
     private fun main() = runBlocking {
-        GlobalScope.launch {
-            TODO("Not implemented yet!")
-        }.invokeOnCompletion { cause ->
-            cause?.let {
-                println("Job cancelled due to ${it.message}")
-            }
+        val headlinesTask = GlobalScope.async {
+            getHeadlines()
         }
+        headlinesTask.await()
+    }
 
-        delay(2000)
+    private fun getHeadlines(): Any {
+        println("getHeadlines")
+        return "null"
     }
 
 
