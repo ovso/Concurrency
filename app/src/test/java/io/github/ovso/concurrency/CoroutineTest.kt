@@ -15,20 +15,11 @@ class CoroutineTest {
         main()
     }
 
-    private fun main() = runBlocking {
-        val dispatcher = newSingleThreadContext(name = "ServiceCall")
-        val task = GlobalScope.launch(dispatcher) {
-//            doSomething()
-            printCurrentThread()
+    private fun main()  = runBlocking {
+        val job = GlobalScope.launch {
+
         }
-        task.join()
     }
 
-    private fun printCurrentThread() {
-        println("Running in thread [${Thread.currentThread().name}]")
-    }
 
-    private fun doSomething() {
-        throw UnsupportedOperationException("Can't do")
-    }
 }
