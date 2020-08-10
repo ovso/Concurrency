@@ -1,6 +1,9 @@
 package io.github.ovso.concurrency
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 
 /**
@@ -15,12 +18,17 @@ class CoroutineTest {
         main()
     }
 
-    private fun main() = runBlocking<Unit> {
+    private fun main() = runBlocking {
         val deferred = GlobalScope.async {
             println("디펄드")
             TODO("Not implemented yet!")
         }
 
-        deferred.await()
+
+        try {
+            deferred.await()
+        } catch (e: Throwable) {
+            println("Deferred cancelled due to ${e.message}")
+        }
     }
 }
