@@ -8,8 +8,14 @@ import kotlinx.coroutines.*
 import javax.xml.parsers.DocumentBuilderFactory
 
 class MainActivity : AppCompatActivity() {
+    val feeds = listOf(
+        "https://ovso.github.io/feed.xml",
+        "https://ovso.github.io/feed.xml",
+        "https://ovso.github.io/feed.xml"
+    )
+
     @ObsoleteCoroutinesApi
-    private val dispatcher = newSingleThreadContext(name = "ServiceCall")
+    private val dispatcher = newFixedThreadPoolContext(2, "IO")
     private val factory = DocumentBuilderFactory.newInstance()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,18 +25,30 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("SetTextI18n")
     private fun asyncLoadNews() = GlobalScope.launch(dispatcher) {
-        val headlines = fetchRssHeadlines()
+        val requests = mutableListOf<Deferred<List<String>>>()
+        feeds.mapTo(requests) {
+            asyncFetchHeadlines(it, dispatcher)
+        }
+        requests.forEach {
+            it.await()
+        }
+        val headlines = requests.flatMap {
+            it.getCompleted()
+        }
+
         launch(Dispatchers.Main) {
-            newsCount.text = "Found ${headlines.count()} News"
+            newsCount.text = "Found ${headlines.size} News in ${requests.size} feeds"
         }
     }
 
-    private fun fetchRssHeadlines(): List<String> {
-        val builder = factory.newDocumentBuilder()
-        val xml = builder.parse("https://ovso.github.io/feed.xml")
-        val entries = xml.getElementsByTagName("entry")
-        return (0 until entries.length).map {
-            entries.item(it).childNodes.item(0).childNodes.item(0).nodeValue
-        }.toList()
-    }
+    private fun asyncFetchHeadlines(feed: String, dispatcher: CoroutineDispatcher) =
+        GlobalScope.async(dispatcher) {
+            val builder = factory.newDocumentBuilder()
+            val xml = builder.parse(feed)
+            val entries = xml.getElementsByTagName("entry")
+
+            (0 until entries.length).map {
+                entries.item(it).childNodes.item(0).childNodes.item(0).nodeValue
+            }.toList()
+        }
 }
