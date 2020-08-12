@@ -9,6 +9,7 @@ import javax.xml.parsers.DocumentBuilderFactory
 
 class MainActivity : AppCompatActivity() {
     val feeds = listOf(
+        "https:/www.daum.net",
         "https://ovso.github.io/feed.xml",
         "https://ovso.github.io/feed.xml",
         "https://ovso.github.io/feed.xml"
@@ -30,14 +31,24 @@ class MainActivity : AppCompatActivity() {
             asyncFetchHeadlines(it, dispatcher)
         }
         requests.forEach {
-            it.await()
+            it.join()
         }
-        val headlines = requests.flatMap {
+
+        val headlines = requests.filter {
+            !it.isCancelled
+        }.flatMap {
             it.getCompleted()
         }
 
+        val failed = requests
+            .filter { it.isCancelled }
+            .size
+
         launch(Dispatchers.Main) {
             newsCount.text = "Found ${headlines.size} News in ${requests.size} feeds"
+            if(failed > 0) {
+                warnings.text = "Failed to fetch $failed feeds"
+            }
         }
     }
 
