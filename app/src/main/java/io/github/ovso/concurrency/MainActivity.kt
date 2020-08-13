@@ -3,16 +3,17 @@ package io.github.ovso.concurrency
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import io.github.ovso.concurrency.data.Feed
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.*
 import javax.xml.parsers.DocumentBuilderFactory
 
 class MainActivity : AppCompatActivity() {
-    val feeds = listOf(
-        "https:/www.daum.net",
-        "https://ovso.github.io/feed.xml",
-        "https://ovso.github.io/feed.xml",
-        "https://ovso.github.io/feed.xml"
+    private val feeds = listOf<Feed>(
+        Feed(name = "Jaeho's blog 1", url = "https://ovso.github.io/feed.xml"),
+        Feed(name = "Jaeho's blog 2", url = "https://ovso.github.io/feed.xml"),
+        Feed("Jaeho's blog 3", url = "https://ovso.github.io/feed.xml"),
+        Feed(name = "Daum", url = "https://www.daum.net")
     )
 
     @ObsoleteCoroutinesApi
@@ -28,7 +29,7 @@ class MainActivity : AppCompatActivity() {
     private fun asyncLoadNews() = GlobalScope.launch(dispatcher) {
         val requests = mutableListOf<Deferred<List<String>>>()
         feeds.mapTo(requests) {
-            fetchHeadlinesAsync(it, dispatcher)
+            fetchHeadlinesAsync(it.url, dispatcher)
         }
         requests.forEach {
             it.join()
@@ -46,7 +47,7 @@ class MainActivity : AppCompatActivity() {
 
         launch(Dispatchers.Main) {
             newsCount.text = "Found ${headlines.size} News in ${requests.size} feeds"
-            if(failed > 0) {
+            if (failed > 0) {
                 warnings.text = "Failed to fetch $failed feeds"
             }
         }
