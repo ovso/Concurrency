@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
     private fun asyncLoadNews() = GlobalScope.launch(dispatcher) {
         val requests = mutableListOf<Deferred<List<String>>>()
         feeds.mapTo(requests) {
-            fetchHeadlinesAsync(it.url, dispatcher)
+            fetchArticleAsync(it.url, dispatcher)
         }
         requests.forEach {
             it.join()
@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun fetchHeadlinesAsync(feed: String, dispatcher: CoroutineDispatcher) =
+    private fun fetchArticleAsync(feed: String, dispatcher: CoroutineDispatcher) =
         GlobalScope.async(dispatcher) {
             val builder = factory.newDocumentBuilder()
             val xml = builder.parse(feed)
