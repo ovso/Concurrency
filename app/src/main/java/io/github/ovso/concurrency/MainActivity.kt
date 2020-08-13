@@ -10,7 +10,7 @@ import kotlinx.coroutines.*
 import javax.xml.parsers.DocumentBuilderFactory
 
 class MainActivity : AppCompatActivity() {
-    private val feeds = listOf<Feed>(
+    private val feeds = listOf(
         Feed(name = "Jaeho's blog 1", url = "https://ovso.github.io/feed.xml"),
         Feed(name = "Jaeho's blog 2", url = "https://ovso.github.io/feed.xml"),
         Feed("Jaeho's blog 3", url = "https://ovso.github.io/feed.xml"),
@@ -36,11 +36,9 @@ class MainActivity : AppCompatActivity() {
             it.join()
         }
 
-        val headlines = requests.filter {
-            !it.isCancelled
-        }.flatMap {
-            it.getCompleted()
-        }
+        val headlines = requests
+            .filter { !it.isCancelled }
+            .flatMap { it.getCompleted() }
 
         val failed = requests
             .filter { it.isCancelled }
