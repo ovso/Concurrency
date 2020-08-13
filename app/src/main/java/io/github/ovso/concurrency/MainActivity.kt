@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
     private fun asyncLoadNews() = GlobalScope.launch(dispatcher) {
         val requests = mutableListOf<Deferred<List<String>>>()
         feeds.mapTo(requests) {
-            asyncFetchHeadlines(it, dispatcher)
+            fetchHeadlinesAsync(it, dispatcher)
         }
         requests.forEach {
             it.join()
@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun asyncFetchHeadlines(feed: String, dispatcher: CoroutineDispatcher) =
+    private fun fetchHeadlinesAsync(feed: String, dispatcher: CoroutineDispatcher) =
         GlobalScope.async(dispatcher) {
             val builder = factory.newDocumentBuilder()
             val xml = builder.parse(feed)
