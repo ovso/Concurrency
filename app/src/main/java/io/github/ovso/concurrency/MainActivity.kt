@@ -3,6 +3,7 @@ package io.github.ovso.concurrency
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import io.github.ovso.concurrency.data.Article
 import io.github.ovso.concurrency.data.Feed
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.*
@@ -27,9 +28,9 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("SetTextI18n")
     private fun asyncLoadNews() = GlobalScope.launch(dispatcher) {
-        val requests = mutableListOf<Deferred<List<String>>>()
+        val requests = mutableListOf<Deferred<List<Article>>>()
         feeds.mapTo(requests) {
-            fetchArticleAsync(it.url, dispatcher)
+            fetchArticleAsync(it, dispatcher)
         }
         requests.forEach {
             it.join()
@@ -53,14 +54,20 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun fetchArticleAsync(feed: String, dispatcher: CoroutineDispatcher) =
+    private fun fetchArticleAsync(feed: Feed, dispatcher: CoroutineDispatcher) =
         GlobalScope.async(dispatcher) {
             val builder = factory.newDocumentBuilder()
-            val xml = builder.parse(feed)
+            val xml = builder.parse(feed.url)
             val entries = xml.getElementsByTagName("entry")
 
             (0 until entries.length).map {
-                entries.item(it).childNodes.item(0).childNodes.item(0).nodeValue
+                val title = entries.item(it).childNodes.item(0).childNodes.item(0).textContent
+                val summary = entries.item(it).childNodes.item(5).childNodes.item(0).textContent
+                Article(
+                    feed = feed.name,
+                    title = title,
+                    summary = summary
+                )
             }.toList()
         }
 }
