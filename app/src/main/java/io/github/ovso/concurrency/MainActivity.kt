@@ -3,6 +3,7 @@ package io.github.ovso.concurrency
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import io.github.ovso.concurrency.data.Article
 import io.github.ovso.concurrency.data.Feed
 import kotlinx.android.synthetic.main.activity_main.*
@@ -17,12 +18,17 @@ class MainActivity : AppCompatActivity() {
         Feed(name = "Daum", url = "https://www.daum.net")
     )
 
+    private val articleAdapter by lazy { ArticleAdapter() }
+
     @ObsoleteCoroutinesApi
     private val dispatcher = newFixedThreadPoolContext(2, "IO")
     private val factory = DocumentBuilderFactory.newInstance()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        rvMain.adapter = articleAdapter
+
         asyncLoadNews()
     }
 
@@ -45,22 +51,26 @@ class MainActivity : AppCompatActivity() {
             .size
 
         launch(Dispatchers.Main) {
-            newsCount.text = "Found ${headlines.size} News in ${requests.size} feeds"
-            if (failed > 0) {
-                warnings.text = "Failed to fetch $failed feeds"
-            }
+            progressBar.isVisible = false
+            articleAdapter.submitList(headlines)
         }
     }
 
     private fun fetchArticleAsync(feed: Feed, dispatcher: CoroutineDispatcher) =
         GlobalScope.async(dispatcher) {
+            delay(1000)
             val builder = factory.newDocumentBuilder()
             val xml = builder.parse(feed.url)
             val entries = xml.getElementsByTagName("entry")
 
             (0 until entries.length).map {
                 val title = entries.item(it).childNodes.item(0).childNodes.item(0).textContent
-                val summary = entries.item(it).childNodes.item(5).childNodes.item(0).textContent
+                var summary = entries.item(it).childNodes.item(5).childNodes.item(0).textContent
+                if (!summary.startsWith("<div")
+                    && summary.contains("<div")
+                ) {
+                    summary = summary.substring(0, summary.indexOf("<div"))
+                }
                 Article(
                     feed = feed.name,
                     title = title,
